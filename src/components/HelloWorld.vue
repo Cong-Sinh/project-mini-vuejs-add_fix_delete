@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>Quản lí sinh viên</h1>
-    <student />
+    <student :itemEdit="hocsinh" @save="clickAdd" />
     <b-table :items="items" :fields="fields" responsive="sm" ref="selectableTable" selectable
       @row-selected="onRowSelected">
       <!-- Example scoped slot for select state illustrative purposes -->
@@ -19,6 +19,8 @@
     <p>
       <b-button size="sm" @click="selectAllRows">Select all</b-button>
       <b-button size="sm" @click="clearSelected">Clear selected</b-button>
+      <b-button @click="clickEdit">Edit</b-button>
+      <b-button @click="clickDelete">Delete</b-button>
     </p>
     <p>
       Selected Rows:<br>
@@ -36,6 +38,8 @@ export default {
   },
   data() {
     return {
+      hocsinh: {
+      },
       fields: ['selected', 'id', 'name', 'age', 'phone', "adress"],
       items: [
         {
@@ -72,6 +76,36 @@ export default {
     }
   },
   methods: {
+    clickAdd(itemSave) {
+      let index = this.items.findIndex((c) =>
+        c.id === itemSave.id)
+      if (index >= 0) {
+        this.items.splice(index, 1, itemSave)
+      } else {
+        this.items.push(itemSave)
+      }
+      return
+    },
+    clickEdit() {
+      if (this.selected.length === 1) {
+        this.hocsinh = this.selected[0]
+        this.$bvModal.show("modal-prevent-closing")
+      }
+    },
+    delete(id) {
+      for (let i = 0; i < this.items.length; i++) {
+        if (id === this.items[i].id) {
+          this.items.splice(i, 1)
+        }
+      }
+    },
+    clickDelete() {
+      if (this.selected.length >= 1) {
+        for (let i = 0; i < this.selected.length; i++) {
+          this.delete(this.selected[i].id)
+        }
+      }
+    },
     onRowSelected(items) {
       this.selected = items
     },
